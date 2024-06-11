@@ -1,53 +1,30 @@
-import json 
+import json
 
 class GerenciadorContatos:
     def __init__(self, arquivo_contatos):
         self.arquivo_contatos = arquivo_contatos
         self.contatos = self.carregar_contatos()
 
-
     def carregar_contatos(self):
         try:
-            with open(self.arquivo_contatos, 'r') as arquivo:
+            with open(self.arquivo_contatos, 'r', encoding='utf-8') as arquivo:
                 return json.load(arquivo)
         except FileNotFoundError:
+            print(f"Aviso: O arquivo '{self.arquivo_contatos}' não foi encontrado. Criando um novo.")
+            return []
+        except json.JSONDecodeError:
+            print(f"Erro: O arquivo '{self.arquivo_contatos}' está corrompido ou em um formato inválido.")
             return []
 
-    def salvar_contatos(self):
-        with open(self.arquivo_contatos, 'w') as arquivo:
-            json.dump(self.contatos, arquivo, indent=4)
-
-    def adicionar_contato(self, nome, telefone):
-        novo_contato = {"nome": nome, "telefone": telefone}
-        self.contatos.append(novo_contato)
-        self.salvar_contatos()
-
     def listar_contatos(self):
+        if not self.contatos:
+            print("Nenhum contato encontrado.")
+            return
         for i, contato in enumerate(self.contatos, start=1):
             print(f"{i}. Nome: {contato['nome']}, Telefone: {contato['telefone']}")
-    
 
-if __name__ == "__main__":
-    gerenciador = GerenciadorContatos("contatos.json")
+# Teste
+nome_arquivo = '#nome do arquivo json'
+gerenciador = GerenciadorContatos(nome_arquivo)
+gerenciador.listar_contatos()
 
-    while True:
-        print("\n=== Gerenciador de Contatos ===")
-        print("1. Adicionar contato")
-        print("2. Listar contatos")
-        print("3. Sair")
-
-        opcao = input("Escolha uma opção: ")
-
-        if opcao == "1":
-            nome = input("Digite o nome do contato: ")
-            telefone = input("Digite o telefone do contato: ")
-            gerenciador.adicionar_contato(nome, telefone)
-            print("Contato adicionado com sucesso!")
-        elif opcao == "2":
-            print("\nLista de contatos:")
-            gerenciador.listar_contatos()
-        elif opcao == "3":
-            print("Saindo...")
-            break
-        else:
-            print("Opção inválida. Por favor, escolha uma opção válida.")
